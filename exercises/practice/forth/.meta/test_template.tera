@@ -1,0 +1,20 @@
+use forth::{Error, Forth, Value};
+
+{% for test in cases %}
+#[test]
+{% if loop.index != 1 -%}
+#[ignore]
+{% endif -%}
+fn {{ test.description | slugify | replace(from="-", to="_") }}() {
+    let mut f = Forth::new();
+    {%- for instr in test.input.instructions %}
+    f.eval({{ instr }});
+    {% endfor -%}
+    {%- if test.expected is object %}
+
+    {% elif  %}
+        let expected_stack = {{ test.expected | json_encode() }};
+        assert_eq!(f.stack(), expected);
+    {% endif %}
+}
+{% endfor -%}
